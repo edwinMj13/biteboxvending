@@ -112,37 +112,37 @@ class GalleryScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppTheme.darkColor(context),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.12)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: TextStyle(
-                        color: AppTheme.primary(context),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.description,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   width: double.infinity,
+              //   padding: const EdgeInsets.all(20),
+              //   decoration: BoxDecoration(
+              //     color: AppTheme.darkColor(context),
+              //     borderRadius: BorderRadius.circular(20),
+              //     border: Border.all(color: Colors.white.withOpacity(0.12)),
+              //   ),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Text(
+              //         item.title,
+              //         style: TextStyle(
+              //           color: AppTheme.primary(context),
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //       const SizedBox(height: 8),
+              //       Text(
+              //         item.description,
+              //         style: const TextStyle(
+              //           color: Colors.white70,
+              //           fontSize: 13,
+              //           height: 1.4,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         );
@@ -279,48 +279,48 @@ class GalleryScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    item.description,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.black54,
-                      height: 1.4,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Icon(Icons.zoom_in_rounded, size: 14, color: primaryColor),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Click to view',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(16.0),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         item.title,
+            //         style: const TextStyle(
+            //           fontSize: 15,
+            //           fontWeight: FontWeight.bold,
+            //           color: Colors.black87,
+            //         ),
+            //       ),
+            //       const SizedBox(height: 6),
+            //       Text(
+            //         item.description,
+            //         style: const TextStyle(
+            //           fontSize: 11,
+            //           color: Colors.black54,
+            //           height: 1.4,
+            //         ),
+            //         maxLines: 2,
+            //         overflow: TextOverflow.ellipsis,
+            //       ),
+            //       const SizedBox(height: 10),
+            //       Row(
+            //         children: [
+            //           Icon(Icons.zoom_in_rounded, size: 14, color: primaryColor),
+            //           const SizedBox(width: 4),
+            //           Text(
+            //             'Click to view',
+            //             style: TextStyle(
+            //               fontSize: 10,
+            //               fontWeight: FontWeight.bold,
+            //               color: primaryColor,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),
