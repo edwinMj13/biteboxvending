@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/content/content_providers.dart';
+import '../../../../core/content/site_content_models.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/footer_section.dart';
@@ -28,7 +30,11 @@ class HomeScreen extends ConsumerWidget {
           _buildHowItWorksSection(context, isDesktop),
 
           // Stats Section
-          _buildStatsSection(context, isDesktop),
+          _buildStatsSection(
+            context,
+            isDesktop,
+            ref.watch(publicHomeStatsProvider),
+          ),
 
           // Shared Footer
           const FooterSection(),
@@ -588,13 +594,12 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsSection(BuildContext context, bool isDesktop) {
-    final stats = [
-      _StatItem(value: '50+', label: 'Active Machines'),
-      _StatItem(value: '10K+', label: 'Daily Happy Customers'),
-      _StatItem(value: '150+', label: 'Products Stocked'),
-      _StatItem(value: '4+', label: 'Districts Covered'),
-    ];
+  // Stats are managed from the admin portal ("Home Numbers" tab).
+  Widget _buildStatsSection(
+    BuildContext context,
+    bool isDesktop,
+    List<StatItem> stats,
+  ) {
 
     return Container(
       decoration: AppTheme.bannerDecoration(context),
@@ -1040,10 +1045,4 @@ class _StepItem {
     required this.title,
     required this.description,
   });
-}
-
-class _StatItem {
-  final String value;
-  final String label;
-  _StatItem({required this.value, required this.label});
 }

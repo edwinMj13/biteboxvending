@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/content/content_providers.dart';
+import '../../core/content/site_content_models.dart';
 import '../../core/theme/app_theme.dart';
+import 'brand_icons.dart';
 
-class FooterSection extends StatelessWidget {
+class FooterSection extends ConsumerWidget {
   const FooterSection({super.key});
 
   Future<void> _launchUrl(String urlString) async {
@@ -14,14 +18,23 @@ class FooterSection extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final contact = ref.watch(contactProvider);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth >= 768;
 
         return Container(
           color: AppTheme.darkColor(context),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+          // On mobile the floating bottom dock overlaps the page, so leave
+          // room for it below the footer content.
+          padding: EdgeInsets.fromLTRB(
+            24,
+            48,
+            24,
+            isDesktop ? 48 : 48 + 90 + MediaQuery.of(context).padding.bottom,
+          ),
           child: Center(
             child: Container(
               constraints: const BoxConstraints(maxWidth: 1200),
@@ -36,7 +49,7 @@ class FooterSection extends StatelessWidget {
                             const SizedBox(width: 24),
                             Expanded(child: _buildLinksColumn(context)),
                             const SizedBox(width: 24),
-                            Expanded(child: _buildContactColumn(context)),
+                            Expanded(child: _buildContactColumn(context, contact)),
                           ],
                         )
                       : Column(
@@ -46,7 +59,7 @@ class FooterSection extends StatelessWidget {
                             const SizedBox(height: 32),
                             _buildLinksColumn(context),
                             const SizedBox(height: 32),
-                            _buildContactColumn(context),
+                            _buildContactColumn(context, contact),
                           ],
                         ),
                   Divider(color: AppTheme.greyColor(context), height: 48),
@@ -64,22 +77,7 @@ class FooterSection extends StatelessWidget {
                                     fontSize: 13,
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    _buildSocialIconButton(
-                                      icon: Icons.chat_bubble_outline_rounded,
-                                      tooltip: 'WhatsApp Us',
-                                      url: 'https://wa.me/918129037133',
-                                    ),
-                                    const SizedBox(width: 12),
-                                    _buildSocialIconButton(
-                                      icon: Icons.camera_alt_outlined,
-                                      tooltip: 'Instagram',
-                                      url:
-                                          'https://www.instagram.com/biteboxkochi',
-                                    ),
-                                  ],
-                                ),
+                                _buildSocialRow(contact),
                               ],
                             )
                           : Column(
@@ -93,22 +91,7 @@ class FooterSection extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    _buildSocialIconButton(
-                                      icon: Icons.chat_bubble_outline_rounded,
-                                      tooltip: 'WhatsApp Us',
-                                      url: 'https://wa.me/918129037133',
-                                    ),
-                                    const SizedBox(width: 12),
-                                    _buildSocialIconButton(
-                                      icon: Icons.camera_alt_outlined,
-                                      tooltip: 'Instagram',
-                                      url:
-                                          'https://www.instagram.com/biteboxkochi',
-                                    ),
-                                  ],
-                                ),
+                                _buildSocialRow(contact),
                               ],
                             );
                     },
@@ -188,7 +171,7 @@ class FooterSection extends StatelessWidget {
     );
   }
 
-  Widget _buildContactColumn(BuildContext context) {
+  Widget _buildContactColumn(BuildContext context, ContactInfo contact) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -209,9 +192,11 @@ class FooterSection extends StatelessWidget {
               size: 18,
             ),
             const SizedBox(width: 8),
-            const Text(
-              'Kochi, Kerala, India',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            Expanded(
+              child: Text(
+                contact.address,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
             ),
           ],
         ),
@@ -220,9 +205,9 @@ class FooterSection extends StatelessWidget {
           children: [
             Icon(Icons.phone_outlined, color: AppTheme.primary(context), size: 18),
             const SizedBox(width: 8),
-            const Text(
-              '+91 81290 37133',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            Text(
+              contact.phone,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
           ],
         ),
@@ -231,9 +216,9 @@ class FooterSection extends StatelessWidget {
           children: [
             Icon(Icons.email_outlined, color: AppTheme.primary(context), size: 18),
             const SizedBox(width: 8),
-            const Text(
-              'biteboxkochi@gmail.com',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            Text(
+              contact.email,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
           ],
         ),
@@ -254,25 +239,31 @@ class FooterSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialIconButton({
-    required IconData icon,
-    required String tooltip,
-    required String url,
-  }) {
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        onTap: () => _launchUrl(url),
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white24),
-          ),
-          child: Icon(icon, color: Colors.white, size: 18),
-        ),
+  Widget _buildSocialRow(ContactInfo contact) {
+    final buttons = [
+      BrandCircleButton(
+        brand: Brand.whatsapp,
+        onPressed: () => _launchUrl(contact.whatsappUrl()),
       ),
+      if (contact.instagramUrl.isNotEmpty)
+        BrandCircleButton(
+          brand: Brand.instagram,
+          onPressed: () => _launchUrl(contact.instagramUrl),
+        ),
+      if (contact.facebookUrl.isNotEmpty)
+        BrandCircleButton(
+          brand: Brand.facebook,
+          onPressed: () => _launchUrl(contact.facebookUrl),
+        ),
+    ];
+
+    return Row(
+      children: [
+        for (var i = 0; i < buttons.length; i++) ...[
+          if (i > 0) const SizedBox(width: 12),
+          buttons[i],
+        ],
+      ],
     );
   }
 }

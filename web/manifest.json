@@ -3,8 +3,13 @@
     "short_name": "BiteBox",
     "start_url": ".",
     "display": "standalone",
+<<<<<<< Updated upstream
     "background_color": "#222831",
     "theme_color": "#00ADB5",
+=======
+    "background_color": "#0A291D",
+    "theme_color": "#10B981",
+>>>>>>> Stashed changes
     "description": "BiteBox 24/7 - Smart, automated vending and retail network in Kerala.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,

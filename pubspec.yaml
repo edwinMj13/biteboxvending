@@ -38,6 +38,12 @@ dependencies:
   url_launcher: ^6.3.0
   firebase_core: ^4.11.0
   go_router: ^17.3.0
+<<<<<<< Updated upstream
+=======
+  cloud_firestore: ^6.10.2
+  firebase_auth: ^6.7.1
+  font_awesome_flutter: ^11.0.0
+>>>>>>> Stashed changes
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +55,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -89,3 +96,19 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+<<<<<<< Updated upstream
+=======
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/app_icon.png" # 1024x1024 source (app_icon.svg)
+  remove_alpha_ios: true
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#0A291D"
+  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
+  web:
+    generate: true
+    image_path: "assets/icons/app_icon.png"
+    background_color: "#0A291D"
+    theme_color: "#10B981"
+>>>>>>> Stashed changes

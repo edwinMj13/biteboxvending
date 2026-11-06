@@ -1,0 +1,46 @@
+rules_version = '2';
+
+// Security rules for the BiteBox public site + admin portal.
+// - Anyone can READ site content and machines (public website).
+// - Anyone can CREATE a franchise enquiry (but not read others').
+// - Only admins (users with an admins/{uid} doc) can edit content
+//   and read/delete enquiries.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /site_content/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /machines/{machineId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /enquiries/{enquiryId} {
+      allow create: if
+        request.resource.data.keys().hasOnly(
+          ['name', 'email', 'phone', 'location', 'message', 'channel', 'createdAt']) &&
+        request.resource.data.name is string && request.resource.data.name.size() <= 200 &&
+        request.resource.data.email is string && request.resource.data.email.size() <= 200 &&
+        request.resource.data.phone is string && request.resource.data.phone.size() <= 50 &&
+        request.resource.data.location is string && request.resource.data.location.size() <= 300 &&
+        request.resource.data.message is string && request.resource.data.message.size() <= 5000 &&
+        request.resource.data.channel in ['whatsapp', 'email', 'direct'] &&
+        request.resource.data.createdAt == request.time;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admin docs are created by hand in the Firebase console.
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}

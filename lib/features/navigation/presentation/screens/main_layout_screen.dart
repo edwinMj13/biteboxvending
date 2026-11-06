@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/content/content_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class MainLayoutScreen extends ConsumerWidget {
@@ -304,7 +305,7 @@ class MainLayoutScreen extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        '+91 81290 37133',
+                        ref.watch(contactProvider).phone,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                           fontSize: 10,
@@ -636,11 +637,11 @@ class MainLayoutScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 '24/7 Smart Helpline',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -649,10 +650,10 @@ class MainLayoutScreen extends ConsumerWidget {
                                   fontFamily: 'Outfit',
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
-                                '+91 81290 37133',
-                                style: TextStyle(
+                                ref.watch(contactProvider).phone,
+                                style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 12,
                                 ),

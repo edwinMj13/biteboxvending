@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#0F3B2A"/><stop offset="1" stop-color="#0A291D"/></linearGradient></defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <circle cx="512" cy="488" r="380" fill="#10B981" opacity="0.14"/>
+  <!-- vending machine -->
+  <g transform="translate(272 168)">
+    <rect x="0" y="0" width="480" height="640" rx="56" fill="#FFD369"/>
+    <rect x="0" y="0" width="480" height="96" rx="56" fill="#F5B83D"/>
+    <rect x="0" y="48" width="480" height="48" fill="#F5B83D"/>
+    <!-- glass window -->
+    <rect x="44" y="132" width="284" height="380" rx="28" fill="#0A291D"/>
+    <!-- shelves with snacks -->
+    <g fill="#10B981">
+      <rect x="72" y="166" width="64" height="88" rx="14"/>
+      <rect x="154" y="166" width="64" height="88" rx="14" fill="#FFFFFF"/>
+      <rect x="236" y="166" width="64" height="88" rx="14" fill="#F97316"/>
+      <rect x="72" y="292" width="64" height="88" rx="14" fill="#F97316"/>
+      <rect x="154" y="292" width="64" height="88" rx="14"/>
+      <rect x="236" y="292" width="64" height="88" rx="14" fill="#FFFFFF"/>
+      <rect x="72" y="418" width="64" height="62" rx="14" fill="#FFFFFF"/>
+      <rect x="154" y="418" width="64" height="62" rx="14" fill="#F97316"/>
+      <rect x="236" y="418" width="64" height="62" rx="14"/>
+    </g>
+    <g fill="#14513A">
+      <rect x="60" y="262" width="252" height="10" rx="5"/>
+      <rect x="60" y="388" width="252" height="10" rx="5"/>
+    </g>
+    <!-- side panel: screen + keypad (QR) -->
+    <rect x="356" y="132" width="88" height="120" rx="18" fill="#0A291D"/>
+    <rect x="372" y="150" width="56" height="56" rx="6" fill="#FFFFFF"/>
+    <g fill="#0A291D">
+      <rect x="378" y="156" width="18" height="18" rx="3"/>
+      <rect x="404" y="156" width="18" height="18" rx="3"/>
+      <rect x="378" y="182" width="18" height="18" rx="3"/>
+      <rect x="408" y="186" width="10" height="10" rx="2"/>
+    </g>
+    <rect x="372" y="218" width="56" height="16" rx="8" fill="#10B981"/>
+    <g fill="#B7791F">
+      <circle cx="378" cy="290" r="10"/><circle cx="422" cy="290" r="10"/>
+      <circle cx="378" cy="326" r="10"/><circle cx="422" cy="326" r="10"/>
+    </g>
+    <!-- dispense tray -->
+    <rect x="44" y="548" width="400" height="56" rx="20" fill="#0A291D"/>
+  </g>
+  <!-- 24/7 badge -->
+  <g transform="translate(640 652)">
+    <circle cx="110" cy="110" r="118" fill="#0A291D"/>
+    <circle cx="110" cy="110" r="100" fill="#10B981"/>
+    <text x="110" y="134" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="68" fill="#FFFFFF">24/7</text>
+  </g>
+</svg>

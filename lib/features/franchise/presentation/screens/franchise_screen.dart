@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/content/content_providers.dart';
+import '../../../../core/content/site_content_models.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/footer_section.dart';
 import '../../../../shared/widgets/screen_title.dart';
+import '../../../../shared/widgets/brand_icons.dart';
+import '../../../../shared/validators/form_validators.dart';
 
-class FranchiseScreen extends StatefulWidget {
+class FranchiseScreen extends ConsumerStatefulWidget {
   const FranchiseScreen({super.key});
 
   @override
-  State<FranchiseScreen> createState() => _FranchiseScreenState();
+  ConsumerState<FranchiseScreen> createState() => _FranchiseScreenState();
 }
 
-class _FranchiseScreenState extends State<FranchiseScreen> {
+class _FranchiseScreenState extends ConsumerState<FranchiseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -33,36 +39,188 @@ class _FranchiseScreenState extends State<FranchiseScreen> {
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isSubmitting = true;
-      });
+  EnquiryChannel _sentVia = EnquiryChannel.direct;
 
-      // Simulate network request
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            _isSubmitting = false;
-            _submitSuccess = true;
-          });
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+    final channel = await _askEnquiryChannel();
+    if (channel == null) return;
+    await _sendEnquiry(channel);
+  }
 
-          // Reset after a delay
-          Future.delayed(const Duration(seconds: 4), () {
-            if (mounted) {
-              setState(() {
-                _submitSuccess = false;
-              });
-              _nameController.clear();
-              _emailController.clear();
-              _phoneController.clear();
-              _locationController.clear();
-              _messageController.clear();
-            }
-          });
-        }
-      });
+  /// Lets the visitor choose how to send: WhatsApp, Email or website only.
+  /// Bottom sheet on mobile, dialog on desktop.
+  Future<EnquiryChannel?> _askEnquiryChannel() {
+    final isDesktop = MediaQuery.of(context).size.width >= 768;
+
+    // Pop with the popup's own context: the dialog lives on the root
+    // navigator, while this screen sits inside a nested tab navigator.
+    // Popping with the screen's context would remove the tab's only page.
+    Widget options(BuildContext popupContext) => _EnquiryChannelOptions(
+          onSelected: (channel) => Navigator.of(popupContext).pop(channel),
+        );
+
+    if (!isDesktop) {
+      return showModalBottomSheet<EnquiryChannel>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (context) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Send your enquiry',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Choose how you would like to reach us.',
+                  style: TextStyle(color: Colors.black54),
+                ),
+                const SizedBox(height: 20),
+                options(context),
+              ],
+            ),
+          ),
+        ),
+      );
     }
+
+    return showDialog<EnquiryChannel>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('How would you like to send your enquiry?'),
+        content: SizedBox(width: 440, child: options(context)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sendEnquiry(EnquiryChannel channel) async {
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    final contact = ref.read(contactProvider);
+    final enquiry = FranchiseEnquiry(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      // Saved as "+91 98765 43210" so the admin's call/WhatsApp links work
+      // whatever format the visitor typed.
+      phone: FormValidators.formatIndianMobile(_phoneController.text),
+      location: _locationController.text.trim(),
+      message: _messageController.text.trim(),
+      channel: channel,
+    );
+
+    // Open WhatsApp / email first, while the browser still treats this as
+    // a user action (pop-up blockers reject delayed window opens).
+    var launched = true;
+    if (channel == EnquiryChannel.whatsapp) {
+      launched = await _tryLaunch(
+        Uri.parse(contact.whatsappUrl(enquiry.toMessageText())),
+      );
+    } else if (channel == EnquiryChannel.email) {
+      launched = await _tryLaunch(
+        Uri(
+          scheme: 'mailto',
+          path: contact.franchiseEmail,
+          query: _encodeQueryParameters({
+            'subject': 'Franchise Enquiry from ${enquiry.name}',
+            'body': enquiry.toMessageText(),
+          }),
+        ),
+      );
+    }
+
+    // Always store the enquiry so it shows up in the admin portal.
+    var saved = true;
+    try {
+      await ref
+          .read(contentRepositoryProvider)
+          .submitEnquiry(enquiry)
+          .timeout(const Duration(seconds: 10));
+    } catch (_) {
+      saved = false;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isSubmitting = false;
+    });
+
+    final succeeded = channel == EnquiryChannel.direct ? saved : launched;
+    if (!succeeded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            channel == EnquiryChannel.direct
+                ? 'Could not submit your enquiry. Please try WhatsApp or Email.'
+                : 'Could not open ${channel.label}. Please try another option.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _sentVia = channel;
+      _submitSuccess = true;
+    });
+
+    // Reset after a delay
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) {
+        setState(() {
+          _submitSuccess = false;
+        });
+        _nameController.clear();
+        _emailController.clear();
+        _phoneController.clear();
+        _locationController.clear();
+        _messageController.clear();
+      }
+    });
+  }
+
+  Future<bool> _tryLaunch(Uri uri) async {
+    try {
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  String? _encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
   }
 
   @override
@@ -228,10 +386,11 @@ class _FranchiseScreenState extends State<FranchiseScreen> {
                                         label: 'Full Name',
                                         hint: 'Enter your name',
                                         prefixIcon: Icons.person_outline,
-                                        validator: (val) => val == null ||
-                                                val.isEmpty
-                                            ? 'Please enter your name'
-                                            : null,
+                                        validator: FormValidators.name,
+                                        inputFormatters: FormValidators.nameFormatters,
+                                        textCapitalization: TextCapitalization.words,
+                                        textInputAction: TextInputAction.next,
+                                        autofillHints: const [AutofillHints.name],
                                       ),
                                       const SizedBox(height: 16),
                                       CustomTextField(
@@ -240,29 +399,22 @@ class _FranchiseScreenState extends State<FranchiseScreen> {
                                         hint: 'Enter your email',
                                         prefixIcon: Icons.email_outlined,
                                         keyboardType: TextInputType.emailAddress,
-                                        validator: (val) {
-                                          if (val == null || val.isEmpty) {
-                                            return 'Please enter your email';
-                                          }
-                                          if (!RegExp(
-                                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                              .hasMatch(val)) {
-                                            return 'Enter a valid email address';
-                                          }
-                                          return null;
-                                        },
+                                        validator: FormValidators.email,
+                                        inputFormatters: FormValidators.emailFormatters,
+                                        textInputAction: TextInputAction.next,
+                                        autofillHints: const [AutofillHints.email],
                                       ),
                                       const SizedBox(height: 16),
                                       CustomTextField(
                                         controller: _phoneController,
                                         label: 'Phone Number',
-                                        hint: 'Enter your mobile number',
+                                        hint: 'e.g. 98765 43210',
                                         prefixIcon: Icons.phone_outlined,
                                         keyboardType: TextInputType.phone,
-                                        validator: (val) => val == null ||
-                                                val.isEmpty
-                                            ? 'Please enter your phone number'
-                                            : null,
+                                        validator: FormValidators.indianMobile,
+                                        inputFormatters: FormValidators.phoneFormatters,
+                                        textInputAction: TextInputAction.next,
+                                        autofillHints: const [AutofillHints.telephoneNumber],
                                       ),
                                       const SizedBox(height: 16),
                                       CustomTextField(
@@ -270,10 +422,14 @@ class _FranchiseScreenState extends State<FranchiseScreen> {
                                         label: 'Preferred Location / City',
                                         hint: 'e.g., Ernakulam, Infopark',
                                         prefixIcon: Icons.location_on_outlined,
-                                        validator: (val) => val == null ||
-                                                val.isEmpty
-                                            ? 'Please specify a preferred location'
-                                            : null,
+                                        validator: FormValidators.text(
+                                          emptyMessage: 'Please specify a preferred location',
+                                          fieldName: 'Location',
+                                          max: FormValidators.locationMax,
+                                        ),
+                                        maxLength: FormValidators.locationMax,
+                                        textCapitalization: TextCapitalization.words,
+                                        textInputAction: TextInputAction.next,
                                       ),
                                       const SizedBox(height: 16),
                                       CustomTextField(
@@ -283,6 +439,13 @@ class _FranchiseScreenState extends State<FranchiseScreen> {
                                             'Tell us about your background or location access details...',
                                         prefixIcon: Icons.notes_outlined,
                                         maxLines: 4,
+                                        isOptional: true,
+                                        maxLength: FormValidators.messageMax,
+                                        textCapitalization: TextCapitalization.sentences,
+                                        validator: FormValidators.optionalText(
+                                          fieldName: 'Additional information',
+                                          max: FormValidators.messageMax,
+                                        ),
                                       ),
                                       const SizedBox(height: 32),
                                       CustomButton(
@@ -435,8 +598,10 @@ class _FranchiseScreenState extends State<FranchiseScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Thank you for reaching out. We have logged your franchise interest and will connect with you very soon.',
+        Text(
+          _sentVia == EnquiryChannel.direct
+              ? 'Thank you for reaching out. We have logged your franchise interest and will connect with you very soon.'
+              : 'Thank you! Please press send in ${_sentVia.label} to deliver your message. We will connect with you very soon.',
           style: TextStyle(color: Colors.black54, height: 1.4),
           textAlign: TextAlign.center,
         ),
@@ -517,6 +682,110 @@ class _FranchiseScreenState extends State<FranchiseScreen> {
               ],
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The three ways to send a franchise enquiry.
+class _EnquiryChannelOptions extends StatelessWidget {
+  final ValueChanged<EnquiryChannel> onSelected;
+  const _EnquiryChannelOptions({required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = AppTheme.primary(context);
+
+    Widget option({
+      required EnquiryChannel channel,
+      required Widget logo,
+      required Color color,
+      required String title,
+      required String subtitle,
+    }) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Material(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => onSelected(channel),
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: color.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    alignment: Alignment.center,
+                    child: logo,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.chevron_right_rounded, color: color),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        option(
+          channel: EnquiryChannel.whatsapp,
+          logo: const BrandLogo(Brand.whatsapp, size: 24),
+          color: Brand.whatsapp.color,
+          title: 'Send via WhatsApp',
+          subtitle: 'Opens WhatsApp with your details filled in',
+        ),
+        option(
+          channel: EnquiryChannel.email,
+          logo: Icon(Icons.email_rounded, color: Colors.blue.shade600),
+          color: Colors.blue.shade600,
+          title: 'Send via Email',
+          subtitle: 'Opens your email app with your details filled in',
+        ),
+        option(
+          channel: EnquiryChannel.direct,
+          logo: Icon(Icons.send_rounded, color: primary),
+          color: primary,
+          title: 'Submit Enquiry',
+          subtitle: 'Send it straight to our team, we will contact you',
         ),
       ],
     );

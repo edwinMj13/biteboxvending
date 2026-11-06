@@ -8,72 +8,72 @@ class GalleryScreen extends StatelessWidget {
 
   final List<_GalleryImageItem> _items = const [
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.34.jpeg',
+      assetPath: 'assets/gallery_images/01_teal_machine_front_view.jpg',
       title: 'Teal Machine Front View',
       description: 'Modern vending layout offering premium snacks and beverages.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.34 (1).jpeg',
+      assetPath: 'assets/gallery_images/02_smart_vending_terminal.jpg',
       title: 'Smart Vending Terminal',
       description: 'Sleek interface and payment display for a smooth checkout process.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.35.jpeg',
+      assetPath: 'assets/gallery_images/03_restocked_beverage_grid.jpg',
       title: 'Restocked Beverage Grid',
       description: 'Fresh sodas, juices, and cold water ready for instant dispensing.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.35 (1).jpeg',
+      assetPath: 'assets/gallery_images/04_cashless_payment_terminal.jpg',
       title: 'Cashless Payment Terminal',
       description: 'UPI and card checkout options for rapid vending purchases.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.35 (2).jpeg',
+      assetPath: 'assets/gallery_images/05_bitebox_double_unit_setup.jpg',
       title: 'BiteBox Double Unit Setup',
       description: 'Expanded capacity installation offering dual snack and drink shelves.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.35 (3).jpeg',
+      assetPath: 'assets/gallery_images/06_campus_lounge_install.jpg',
       title: 'Campus Lounge Install',
       description: 'A popular spot for college students to refuel between lectures.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.36.jpeg',
+      assetPath: 'assets/gallery_images/07_bitebox_mini_unit.jpg',
       title: 'BiteBox Mini Unit',
       description: 'Compact footprint design suited for tight office and corridor spaces.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.36 (1).jpeg',
+      assetPath: 'assets/gallery_images/08_restocking_process.jpg',
       title: 'Restocking Process',
       description: 'Operators carefully replenishing the system with fresh, quality snacks.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.36 (2).jpeg',
+      assetPath: 'assets/gallery_images/09_digital_vending_terminal.jpg',
       title: 'Digital Vending Terminal',
       description: 'Interactive high-contrast display panel for simple snack selection.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.48.36 (3).jpeg',
+      assetPath: 'assets/gallery_images/10_tech_park_installation.jpg',
       title: 'Tech Park Installation',
       description: 'Convenient automated retail options in Kochi Infopark corridors.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 12.59.53.jpeg',
+      assetPath: 'assets/gallery_images/11_lulu_cyber_tower_launch.jpg',
       title: 'Lulu Cyber Tower Launch',
       description: 'Inaugurating a new smart vending point for corporate employees.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 13.00.17.jpeg',
+      assetPath: 'assets/gallery_images/12_corridor_vending_access.jpg',
       title: 'Corridor Vending Access',
       description: 'Easily accessible smart snacks in high-traffic campus walkways.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 13.00.18.jpeg',
+      assetPath: 'assets/gallery_images/13_bitebox_metro_station_install.jpg',
       title: 'BiteBox Metro Station Install',
       description: 'Providing quick energy snacks for passengers on the go.',
     ),
     _GalleryImageItem(
-      assetPath: 'assets/gallery_images/WhatsApp Image 2026-06-20 at 13.00.18 (1).jpeg',
+      assetPath: 'assets/gallery_images/14_corporate_cafe_spot.jpg',
       title: 'Corporate Cafe Spot',
       description: 'Deploying automated canteen options for late-night office work.',
     ),
@@ -276,6 +276,8 @@ class GalleryScreen extends StatelessWidget {
                 child: Image.asset(
                   item.assetPath,
                   fit: BoxFit.cover,
+                  // Decode thumbnails small; the full image opens in the dialog.
+                  cacheWidth: 600,
                 ),
               ),
             ),

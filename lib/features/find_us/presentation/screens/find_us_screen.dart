@@ -1,107 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/content/content_providers.dart';
+import '../../../../core/content/site_content_models.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/footer_section.dart';
 import '../../../../shared/widgets/screen_title.dart';
 
-class FindUsScreen extends StatefulWidget {
+class FindUsScreen extends ConsumerStatefulWidget {
   const FindUsScreen({super.key});
 
   @override
-  State<FindUsScreen> createState() => _FindUsScreenState();
+  ConsumerState<FindUsScreen> createState() => _FindUsScreenState();
 }
 
-class _FindUsScreenState extends State<FindUsScreen> {
+class _FindUsScreenState extends ConsumerState<FindUsScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
-  final List<_MachineLocation> _allLocations = [
-    _MachineLocation(
-      id: 'CB-EKM-01',
-      name: 'BiteBox Max #01',
-      district: 'Ernakulam',
-      address: 'Lulu Cyber Tower 1, Ground Floor Lobby, Infopark',
-      landmark: 'Near elevators',
-      status: _MachineStatus.stocked,
-      latLng: '9.9833,76.3500',
-    ),
-    _MachineLocation(
-      id: 'CB-EKM-02',
-      name: 'BiteBox Mini #12',
-      district: 'Ernakulam',
-      address: 'CUSAT Campus, Science Faculty block block A',
-      landmark: 'Next to library entry',
-      status: _MachineStatus.stocked,
-      latLng: '10.0438,76.3244',
-    ),
-    _MachineLocation(
-      id: 'CB-EKM-03',
-      name: 'BiteBox Max #08',
-      district: 'Ernakulam',
-      address: 'Aster Medcity, South Block Waiting Hall',
-      landmark: 'Beside cafeteria entrance',
-      status: _MachineStatus.lowStock,
-      latLng: '10.0631,76.2731',
-    ),
-    _MachineLocation(
-      id: 'CB-CLT-01',
-      name: 'BiteBox Max #03',
-      district: 'Calicut',
-      address: 'UL Cyberpark, Main Entrance Lobby, Nellikode',
-      landmark: 'Adjacent to reception desk',
-      status: _MachineStatus.stocked,
-      latLng: '11.2618,75.8361',
-    ),
-    _MachineLocation(
-      id: 'CB-CLT-02',
-      name: 'BiteBox Slim #04',
-      district: 'Calicut',
-      address: 'NIT Calicut, Mechanical Eng. Dept Lounge',
-      landmark: 'Beside student notice board',
-      status: _MachineStatus.offline,
-      latLng: '11.3216,75.9336',
-    ),
-    _MachineLocation(
-      id: 'CB-KTM-01',
-      name: 'BiteBox Mini #06',
-      district: 'Kottayam',
-      address: 'CMS College, Science Block Corridor',
-      landmark: 'Under the main central dome lobby',
-      status: _MachineStatus.stocked,
-      latLng: '9.5935,76.5186',
-    ),
-    _MachineLocation(
-      id: 'CB-TVM-01',
-      name: 'BiteBox Max #05',
-      district: 'Thiruvananthapuram',
-      address: 'Nila Building Ground Floor, Technopark Phase 1',
-      landmark: 'Next to bank ATM lobby',
-      status: _MachineStatus.stocked,
-      latLng: '8.5566,76.8821',
-    ),
-    _MachineLocation(
-      id: 'CB-TVM-02',
-      name: 'BiteBox Max #09',
-      district: 'Thiruvananthapuram',
-      address: 'Ganga Building Lobby, Technopark Phase 3',
-      landmark: 'Near the food court stairs',
-      status: _MachineStatus.stocked,
-      latLng: '8.5492,76.8837',
-    ),
-    _MachineLocation(
-      id: 'CB-TVM-03',
-      name: 'BiteBox Mini #15',
-      district: 'Thiruvananthapuram',
-      address: 'Kerala Government Secretariat, South Block Main Corridor',
-      landmark: 'Near the visitor waiting area',
-      status: _MachineStatus.stocked,
-      latLng: '8.5009,76.9507',
-    ),
-  ];
-
-  List<_MachineLocation> get _filteredLocations {
-    if (_searchQuery.isEmpty) return _allLocations;
+  // Machines are managed from the admin portal ("Machine Locations" tab).
+  List<MachineLocation> _filter(List<MachineLocation> allLocations) {
+    if (_searchQuery.isEmpty) return allLocations;
     final query = _searchQuery.toLowerCase();
-    return _allLocations.where((loc) {
+    return allLocations.where((loc) {
       return loc.name.toLowerCase().contains(query) ||
           loc.district.toLowerCase().contains(query) ||
           loc.address.toLowerCase().contains(query);
@@ -118,6 +38,9 @@ class _FindUsScreenState extends State<FindUsScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 768;
+    final machines = ref.watch(machinesProvider);
+    final allLocations = machines.valueOrNull ?? const <MachineLocation>[];
+    final filteredLocations = _filter(allLocations);
 
     return SingleChildScrollView(
       child: Column(
@@ -148,8 +71,22 @@ class _FindUsScreenState extends State<FindUsScreen> {
                     const SizedBox(height: 32),
 
                     // Grid / List
-                    _filteredLocations.isEmpty
-                        ? _buildNoResults()
+                    machines.isLoading
+                        ? const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 60),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        : allLocations.isEmpty
+                        ? _buildNoResults(
+                            title: 'No Vending Machines Yet',
+                            message: 'Machine locations will appear here soon.',
+                          )
+                        : filteredLocations.isEmpty
+                        ? _buildNoResults(
+                            title: 'No Vending Machines Found',
+                            message:
+                                'Try searching for another keyword or district.',
+                          )
                         : GridView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -160,10 +97,10 @@ class _FindUsScreenState extends State<FindUsScreen> {
                               mainAxisSpacing: 24,
                               childAspectRatio: 1.3,
                             ),
-                            itemCount: _filteredLocations.length,
+                            itemCount: filteredLocations.length,
                             itemBuilder: (context, index) {
                               return _buildLocationCard(
-                                _filteredLocations[index],
+                                filteredLocations[index],
                               );
                             },
                           ),
@@ -270,24 +207,13 @@ class _FindUsScreenState extends State<FindUsScreen> {
     );
   }
 
-  Widget _buildLocationCard(_MachineLocation loc) {
-    Color statusColor;
-    String statusText;
-
-    switch (loc.status) {
-      case _MachineStatus.stocked:
-        statusColor = Colors.green;
-        statusText = 'Online & Stocked';
-        break;
-      case _MachineStatus.lowStock:
-        statusColor = Colors.amber.shade700;
-        statusText = 'Low Stock';
-        break;
-      case _MachineStatus.offline:
-        statusColor = Colors.red;
-        statusText = 'Maintenance';
-        break;
-    }
+  Widget _buildLocationCard(MachineLocation loc) {
+    final statusText = loc.status.label;
+    final Color statusColor = switch (loc.status) {
+      MachineStatus.stocked => Colors.green,
+      MachineStatus.lowStock => Colors.amber.shade700,
+      MachineStatus.offline => Colors.red,
+    };
 
     return Card(
       child: Padding(
@@ -376,7 +302,7 @@ class _FindUsScreenState extends State<FindUsScreen> {
     );
   }
 
-  Widget _buildNoResults() {
+  Widget _buildNoResults({required String title, required String message}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 60),
@@ -385,43 +311,22 @@ class _FindUsScreenState extends State<FindUsScreen> {
         children: [
           Icon(Icons.location_off_outlined, size: 64, color: Colors.grey.shade400),
           const SizedBox(height: 16),
-          const Text(
-            'No Vending Machines Found',
-            style: TextStyle(
+          Text(
+            title,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black54,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Try searching for another keyword or district.',
-            style: TextStyle(color: Colors.black38),
+          Text(
+            message,
+            style: const TextStyle(color: Colors.black38),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
-}
-
-enum _MachineStatus { stocked, lowStock, offline }
-
-class _MachineLocation {
-  final String id;
-  final String name;
-  final String district;
-  final String address;
-  final String landmark;
-  final _MachineStatus status;
-  final String latLng;
-
-  _MachineLocation({
-    required this.id,
-    required this.name,
-    required this.district,
-    required this.address,
-    required this.landmark,
-    required this.status,
-    required this.latLng,
-  });
 }

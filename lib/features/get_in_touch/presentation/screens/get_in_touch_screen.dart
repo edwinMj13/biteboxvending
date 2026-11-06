@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/content/content_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/footer_section.dart';
 import '../../../../shared/widgets/screen_title.dart';
+import '../../../../shared/widgets/brand_icons.dart';
+import '../../../../shared/validators/form_validators.dart';
 
-class GetInTouchScreen extends StatefulWidget {
+class GetInTouchScreen extends ConsumerStatefulWidget {
   const GetInTouchScreen({super.key});
 
   @override
-  State<GetInTouchScreen> createState() => _GetInTouchScreenState();
+  ConsumerState<GetInTouchScreen> createState() => _GetInTouchScreenState();
 }
 
-class _GetInTouchScreenState extends State<GetInTouchScreen> {
+class _GetInTouchScreenState extends ConsumerState<GetInTouchScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -55,14 +59,14 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
       });
 
       try {
-        final name = _nameController.text;
-        final email = _emailController.text;
-        final subject = _subjectController.text;
-        final message = _messageController.text;
+        final name = _nameController.text.trim();
+        final email = _emailController.text.trim();
+        final subject = _subjectController.text.trim();
+        final message = _messageController.text.trim();
 
         final Uri emailLaunchUri = Uri(
           scheme: 'mailto',
-          path: 'biteboxkochi@gmail.com',
+          path: ref.read(contactProvider).email,
           query: _encodeQueryParameters(<String, String>{
             'subject': subject.isNotEmpty
                 ? subject
@@ -112,6 +116,7 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 768;
+    final contact = ref.watch(contactProvider);
 
     return SingleChildScrollView(
       child: Column(
@@ -147,23 +152,21 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
                             context,
                             icon: Icons.location_on_rounded,
                             title: 'Headquarters',
-                            content:
-                                'BiteBox 24/7 Vending, Kochi, Kerala, India',
+                            content: contact.address,
                           ),
                           _buildContactInfoTile(
                             context,
                             icon: Icons.phone_rounded,
                             title: 'Call Support',
-                            content: '+91 81290 37133',
-                            onTap: () => _launchUrl('tel:+918129037133'),
+                            content: contact.phone,
+                            onTap: () => _launchUrl('tel:${contact.phoneDial}'),
                           ),
                           _buildContactInfoTile(
                             context,
                             icon: Icons.email_rounded,
                             title: 'Email Address',
-                            content: 'biteboxkochi@gmail.com',
-                            onTap: () =>
-                                _launchUrl('mailto:biteboxkochi@gmail.com'),
+                            content: contact.email,
+                            onTap: () => _launchUrl('mailto:${contact.email}'),
                           ),
                           const SizedBox(height: 32),
                           const Text(
@@ -175,24 +178,34 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
+                          // Full-width stacked buttons on mobile, side by side on desktop.
                           Wrap(
                             spacing: 16,
-                            runSpacing: 16,
+                            runSpacing: 12,
                             children: [
-                              CustomButton(
+                              BrandButton(
+                                brand: Brand.whatsapp,
                                 text: 'Chat on WhatsApp',
-                                icon: Icons.chat_bubble_outline_rounded,
+                                expand: !isDesktop,
                                 onPressed: () =>
-                                    _launchUrl('https://wa.me/918129037133'),
+                                    _launchUrl(contact.whatsappUrl()),
                               ),
-                              CustomButton(
-                                text: 'Follow on Instagram',
-                                icon: Icons.camera_alt_outlined,
-                                isPrimary: false,
-                                onPressed: () => _launchUrl(
-                                  'https://www.instagram.com/biteboxkochi',
+                              if (contact.instagramUrl.isNotEmpty)
+                                BrandButton(
+                                  brand: Brand.instagram,
+                                  text: 'Follow on Instagram',
+                                  expand: !isDesktop,
+                                  onPressed: () =>
+                                      _launchUrl(contact.instagramUrl),
                                 ),
-                              ),
+                              if (contact.facebookUrl.isNotEmpty)
+                                BrandButton(
+                                  brand: Brand.facebook,
+                                  text: 'Follow on Facebook',
+                                  expand: !isDesktop,
+                                  onPressed: () =>
+                                      _launchUrl(contact.facebookUrl),
+                                ),
                             ],
                           ),
                         ],
@@ -252,10 +265,11 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
                                         label: 'Your Name',
                                         hint: 'Enter your name',
                                         prefixIcon: Icons.person_outline,
-                                        validator: (val) =>
-                                            val == null || val.isEmpty
-                                            ? 'Please enter your name'
-                                            : null,
+                                        validator: FormValidators.name,
+                                        inputFormatters: FormValidators.nameFormatters,
+                                        textCapitalization: TextCapitalization.words,
+                                        textInputAction: TextInputAction.next,
+                                        autofillHints: const [AutofillHints.name],
                                       ),
                                       const SizedBox(height: 16),
                                       CustomTextField(
@@ -265,17 +279,10 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
                                         prefixIcon: Icons.email_outlined,
                                         keyboardType:
                                             TextInputType.emailAddress,
-                                        validator: (val) {
-                                          if (val == null || val.isEmpty) {
-                                            return 'Please enter your email';
-                                          }
-                                          if (!RegExp(
-                                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                          ).hasMatch(val)) {
-                                            return 'Enter a valid email address';
-                                          }
-                                          return null;
-                                        },
+                                        validator: FormValidators.email,
+                                        inputFormatters: FormValidators.emailFormatters,
+                                        textInputAction: TextInputAction.next,
+                                        autofillHints: const [AutofillHints.email],
                                       ),
                                       const SizedBox(height: 16),
                                       CustomTextField(
@@ -283,10 +290,15 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
                                         label: 'Subject',
                                         hint: 'Enter subject of message',
                                         prefixIcon: Icons.topic_outlined,
-                                        validator: (val) =>
-                                            val == null || val.isEmpty
-                                            ? 'Please enter a subject'
-                                            : null,
+                                        validator: FormValidators.text(
+                                          emptyMessage: 'Please enter a subject',
+                                          fieldName: 'Subject',
+                                          min: 3,
+                                          max: FormValidators.subjectMax,
+                                        ),
+                                        maxLength: FormValidators.subjectMax,
+                                        textCapitalization: TextCapitalization.sentences,
+                                        textInputAction: TextInputAction.next,
                                       ),
                                       const SizedBox(height: 16),
                                       CustomTextField(
@@ -296,10 +308,14 @@ class _GetInTouchScreenState extends State<GetInTouchScreen> {
                                             'Write your message details here...',
                                         prefixIcon: Icons.chat_outlined,
                                         maxLines: 4,
-                                        validator: (val) =>
-                                            val == null || val.isEmpty
-                                            ? 'Please enter a message'
-                                            : null,
+                                        maxLength: FormValidators.messageMax,
+                                        textCapitalization: TextCapitalization.sentences,
+                                        validator: FormValidators.text(
+                                          emptyMessage: 'Please enter a message',
+                                          fieldName: 'Message',
+                                          min: 10,
+                                          max: FormValidators.messageMax,
+                                        ),
                                       ),
                                       const SizedBox(height: 32),
                                       CustomButton(
