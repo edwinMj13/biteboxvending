@@ -83,7 +83,6 @@ class GalleryScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) {
-        final primaryColor = AppTheme.primary(context);
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -118,7 +117,7 @@ class GalleryScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.darkColor(context),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.12)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,12 +252,12 @@ class GalleryScreen extends StatelessWidget {
     return Container(
       decoration: AppTheme.cardDecoration(context).copyWith(
         border: Border.all(
-          color: primaryColor.withOpacity(0.18),
+          color: primaryColor.withValues(alpha: 0.18),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.04),
+            color: primaryColor.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

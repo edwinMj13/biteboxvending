@@ -220,14 +220,14 @@ class _GetInTouchScreenState extends ConsumerState<GetInTouchScreen> {
                       child: Container(
                         decoration: AppTheme.cardDecoration(context).copyWith(
                           border: Border.all(
-                            color: AppTheme.primary(context).withOpacity(0.18),
+                            color: AppTheme.primary(context).withValues(alpha: 0.18),
                             width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: AppTheme.primary(
                                 context,
-                              ).withOpacity(0.05),
+                              ).withValues(alpha: 0.05),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -395,7 +395,7 @@ class _GetInTouchScreenState extends ConsumerState<GetInTouchScreen> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
         decoration: AppTheme.cardDecoration(context).copyWith(
-          border: Border.all(color: primaryColor.withOpacity(0.12), width: 1.2),
+          border: Border.all(color: primaryColor.withValues(alpha: 0.12), width: 1.2),
         ),
         child: InkWell(
           onTap: onTap,
@@ -408,7 +408,7 @@ class _GetInTouchScreenState extends ConsumerState<GetInTouchScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.1),
+                    color: primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(icon, color: primaryColor, size: 20),

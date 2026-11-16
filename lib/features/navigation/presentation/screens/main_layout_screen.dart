@@ -44,10 +44,12 @@ class MainLayoutScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(
                         context,
-                      ).scaffoldBackgroundColor.withOpacity(0.85),
+                      ).scaffoldBackgroundColor.withValues(alpha: 0.85),
                       border: Border(
                         bottom: BorderSide(
-                          color: AppTheme.primary(context).withOpacity(0.12),
+                          color: AppTheme.primary(
+                            context,
+                          ).withValues(alpha: 0.12),
                           width: 1.5,
                         ),
                       ),
@@ -67,7 +69,9 @@ class MainLayoutScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primary(context).withOpacity(0.35),
+                          color: AppTheme.primary(
+                            context,
+                          ).withValues(alpha: 0.35),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -94,7 +98,9 @@ class MainLayoutScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.secondary(context).withOpacity(0.25),
+                          color: AppTheme.secondary(
+                            context,
+                          ).withValues(alpha: 0.25),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -133,7 +139,7 @@ class MainLayoutScreen extends ConsumerWidget {
                 Container(
                   margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
-                    color: AppTheme.primary(context).withOpacity(0.1),
+                    color: AppTheme.primary(context).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -212,28 +218,36 @@ class MainLayoutScreen extends ConsumerWidget {
             ],
           ),
 
-          // Menu Tabs List
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(_tabs.length, (index) {
-              final tab = _tabs[index];
-              final isSelected = selectedIndex == index;
+          // Menu Tabs List (scrolls horizontally on narrow desktop widths
+          // instead of overflowing the navbar).
+          Flexible(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(_tabs.length, (index) {
+                  final tab = _tabs[index];
+                  final isSelected = selectedIndex == index;
 
-              return _NavbarMenuItem(
-                tab: tab,
-                isSelected: isSelected,
-                onTap: () {
-                  navigationShell.goBranch(
-                    index,
-                    initialLocation: index == navigationShell.currentIndex,
+                  return _NavbarMenuItem(
+                    tab: tab,
+                    isSelected: isSelected,
+                    onTap: () {
+                      navigationShell.goBranch(
+                        index,
+                        initialLocation: index == navigationShell.currentIndex,
+                      );
+                    },
                   );
-                },
-              );
-            }),
+                }),
+              ),
+            ),
           ),
 
           // Right action bar (Theme + Helpline)
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Theme Toggle Button
               InkWell(
@@ -252,7 +266,7 @@ class MainLayoutScreen extends ConsumerWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.04),
+                    color: Colors.white.withValues(alpha: 0.04),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white10),
                   ),
@@ -280,41 +294,42 @@ class MainLayoutScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 24),
-
-              // Support Helpline
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.support_agent_rounded,
-                    color: AppTheme.primary(context),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        '24/7 Helpline',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+              // Support Helpline (only when there's room for it)
+              if (MediaQuery.sizeOf(context).width >= 1200) ...[
+                const SizedBox(width: 24),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.support_agent_rounded,
+                      color: AppTheme.primary(context),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '24/7 Helpline',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        ref.watch(contactProvider).phone,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
-                          fontSize: 10,
+                        Text(
+                          ref.watch(contactProvider).phone,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.6),
+                            fontSize: 10,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ],
@@ -343,12 +358,15 @@ class MainLayoutScreen extends ConsumerWidget {
       child: Container(
         height: 70,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.85),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: primaryColor.withOpacity(0.15), width: 1.5),
+          border: Border.all(
+            color: primaryColor.withValues(alpha: 0.15),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withOpacity(0.08),
+              color: primaryColor.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -424,7 +442,7 @@ class MainLayoutScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? primaryColor.withOpacity(0.12)
+                    ? primaryColor.withValues(alpha: 0.12)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -467,12 +485,12 @@ class MainLayoutScreen extends ConsumerWidget {
                   top: Radius.circular(32),
                 ),
                 border: Border.all(
-                  color: primaryColor.withOpacity(0.15),
+                  color: primaryColor.withValues(alpha: 0.15),
                   width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
+                    color: Colors.black.withValues(alpha: 0.15),
                     blurRadius: 25,
                     offset: const Offset(0, -10),
                   ),
@@ -556,7 +574,7 @@ class MainLayoutScreen extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: primaryColor.withOpacity(0.12),
+                        color: primaryColor.withValues(alpha: 0.12),
                         width: 1.5,
                       ),
                     ),
@@ -593,7 +611,9 @@ class MainLayoutScreen extends ConsumerWidget {
                                 : AppThemePreset.greenYellow;
                           },
                           style: TextButton.styleFrom(
-                            backgroundColor: primaryColor.withOpacity(0.1),
+                            backgroundColor: primaryColor.withValues(
+                              alpha: 0.1,
+                            ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 8,
@@ -628,7 +648,7 @@ class MainLayoutScreen extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -711,9 +731,9 @@ class MainLayoutScreen extends ConsumerWidget {
       borderRadius: BorderRadius.circular(20),
       child: Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.15), width: 1.5),
+          border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -721,7 +741,7 @@ class MainLayoutScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 24),
@@ -759,8 +779,10 @@ class _NavbarMenuItemState extends State<_NavbarMenuItem> {
   @override
   Widget build(BuildContext context) {
     final activeBg = widget.isSelected
-        ? AppTheme.primary(context).withOpacity(0.12)
-        : (_isHovered ? Colors.white.withOpacity(0.04) : Colors.transparent);
+        ? AppTheme.primary(context).withValues(alpha: 0.12)
+        : (_isHovered
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.transparent);
 
     final textColor = widget.isSelected
         ? AppTheme.primary(context)

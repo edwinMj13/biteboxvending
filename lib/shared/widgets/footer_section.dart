@@ -205,9 +205,12 @@ class FooterSection extends ConsumerWidget {
           children: [
             Icon(Icons.phone_outlined, color: AppTheme.primary(context), size: 18),
             const SizedBox(width: 8),
-            Text(
-              contact.phone,
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            Flexible(
+              child: Text(
+                contact.phone,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -216,9 +219,12 @@ class FooterSection extends ConsumerWidget {
           children: [
             Icon(Icons.email_outlined, color: AppTheme.primary(context), size: 18),
             const SizedBox(width: 8),
-            Text(
-              contact.email,
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            Flexible(
+              child: Text(
+                contact.email,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

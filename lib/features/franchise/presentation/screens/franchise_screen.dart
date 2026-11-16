@@ -308,10 +308,10 @@ class _FranchiseScreenState extends ConsumerState<FranchiseScreen> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppTheme.primary(context).withOpacity(0.12),
+                              color: AppTheme.primary(context).withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                  color: AppTheme.primary(context).withOpacity(0.35),
+                                  color: AppTheme.primary(context).withValues(alpha: 0.35),
                                   width: 1.2),
                             ),
                             child: const Row(
@@ -344,12 +344,12 @@ class _FranchiseScreenState extends ConsumerState<FranchiseScreen> {
                       child: Container(
                         decoration: AppTheme.cardDecoration(context).copyWith(
                           border: Border.all(
-                            color: AppTheme.primary(context).withOpacity(0.18),
+                            color: AppTheme.primary(context).withValues(alpha: 0.18),
                             width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primary(context).withOpacity(0.05),
+                              color: AppTheme.primary(context).withValues(alpha: 0.05),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -631,7 +631,7 @@ class _FranchiseScreenState extends ConsumerState<FranchiseScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: primaryColor.withOpacity(0.3),
+                    color: primaryColor.withValues(alpha: 0.3),
                     blurRadius: 6,
                   ),
                 ],
@@ -651,7 +651,7 @@ class _FranchiseScreenState extends ConsumerState<FranchiseScreen> {
               Container(
                 width: 2,
                 height: 50,
-                color: primaryColor.withOpacity(0.3),
+                color: primaryColor.withValues(alpha: 0.3),
               ),
           ],
         ),

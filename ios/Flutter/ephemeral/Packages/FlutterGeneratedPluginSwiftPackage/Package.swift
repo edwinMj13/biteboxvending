@@ -18,7 +18,7 @@ let package = Package(
         .package(name: "cloud_firestore", path: "../.packages/cloud_firestore-6.10.2"),
         .package(name: "firebase_auth", path: "../.packages/firebase_auth-6.7.1"),
         .package(name: "firebase_core", path: "../.packages/firebase_core-4.15.2"),
-        .package(name: "url_launcher_ios", path: "../.packages/url_launcher_ios-6.4.1"),
+        .package(name: "url_launcher_ios", path: "../.packages/url_launcher_ios-6.4.2"),
         .package(name: "FlutterFramework", path: "../.packages/FlutterFramework")
     ],
     targets: [

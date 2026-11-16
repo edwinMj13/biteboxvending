@@ -93,11 +93,11 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surfaceColor,
         elevation: 4,
-        shadowColor: primaryColor.withOpacity(0.08),
+        shadowColor: primaryColor.withValues(alpha: 0.08),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: primaryColor.withOpacity(0.12),
+            color: primaryColor.withValues(alpha: 0.12),
             width: 1.5,
           ),
         ),
@@ -213,8 +213,8 @@ class AppTheme {
     return BoxDecoration(
       gradient: LinearGradient(
         colors: [
-          primary(context).withOpacity(0.06),
-          secondary(context).withOpacity(0.06),
+          primary(context).withValues(alpha: 0.06),
+          secondary(context).withValues(alpha: 0.06),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -227,12 +227,12 @@ class AppTheme {
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
       border: Border.all(
-        color: primary(context).withOpacity(0.12),
+        color: primary(context).withValues(alpha: 0.12),
         width: 1.5,
       ),
       boxShadow: [
         BoxShadow(
-          color: primary(context).withOpacity(0.04),
+          color: primary(context).withValues(alpha: 0.04),
           blurRadius: 10,
           offset: const Offset(0, 4),
         ),
@@ -245,12 +245,12 @@ class AppTheme {
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
       border: Border.all(
-        color: secondary(context).withOpacity(0.35),
+        color: secondary(context).withValues(alpha: 0.35),
         width: 1.5,
       ),
       boxShadow: [
         BoxShadow(
-          color: primary(context).withOpacity(0.04),
+          color: primary(context).withValues(alpha: 0.04),
           blurRadius: 10,
           offset: const Offset(0, 5),
         ),

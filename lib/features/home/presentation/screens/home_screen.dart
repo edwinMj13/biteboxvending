@@ -68,7 +68,7 @@ class HomeScreen extends ConsumerWidget {
               height: 320,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: primaryColor.withOpacity(0.18),
+                color: primaryColor.withValues(alpha: 0.18),
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 70, sigmaY: 70),
@@ -85,7 +85,7 @@ class HomeScreen extends ConsumerWidget {
               height: 280,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: secondaryColor.withOpacity(0.15),
+                color: secondaryColor.withValues(alpha: 0.15),
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 70, sigmaY: 70),
@@ -151,7 +151,7 @@ class HomeScreen extends ConsumerWidget {
         //     borderRadius: BorderRadius.circular(20),
         //     boxShadow: [
         //       BoxShadow(
-        //         color: AppTheme.secondary(context).withOpacity(0.3),
+        //         color: AppTheme.secondary(context).withValues(alpha: 0.3),
         //         blurRadius: 10,
         //         offset: const Offset(0, 2),
         //       ),
@@ -281,12 +281,12 @@ class HomeScreen extends ConsumerWidget {
                             margin: const EdgeInsets.only(right: 16, bottom: 8, top: 8),
                             decoration: AppTheme.cardDecoration(context).copyWith(
                               border: Border.all(
-                                color: AppTheme.primary(context).withOpacity(0.18),
+                                color: AppTheme.primary(context).withValues(alpha: 0.18),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.primary(context).withOpacity(0.05),
+                                  color: AppTheme.primary(context).withValues(alpha: 0.05),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -300,7 +300,7 @@ class HomeScreen extends ConsumerWidget {
                                   Container(
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primary(context).withOpacity(0.1),
+                                      color: AppTheme.primary(context).withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
@@ -365,7 +365,7 @@ class HomeScreen extends ConsumerWidget {
                                     Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.primary(context).withOpacity(0.1),
+                                        color: AppTheme.primary(context).withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
@@ -467,7 +467,7 @@ class HomeScreen extends ConsumerWidget {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppTheme.primary(context).withOpacity(0.35),
+                                        color: AppTheme.primary(context).withValues(alpha: 0.35),
                                         blurRadius: 8,
                                       ),
                                     ],
@@ -507,7 +507,7 @@ class HomeScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.all(16),
                                 decoration: AppTheme.accentCardDecoration(context).copyWith(
                                   border: Border.all(
-                                    color: AppTheme.secondary(context).withOpacity(0.4),
+                                    color: AppTheme.secondary(context).withValues(alpha: 0.4),
                                     width: 1.2,
                                   ),
                                 ),
@@ -654,10 +654,10 @@ class HomeScreen extends ConsumerWidget {
                         final stat = stats[index];
                         return Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.08),
+                            color: Colors.white.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.12),
+                              color: Colors.white.withValues(alpha: 0.12),
                               width: 1.2,
                             ),
                           ),
@@ -792,7 +792,7 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
             height: widget.isWide ? 340 : 260,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: primaryColor.withOpacity(0.12),
+              color: primaryColor.withValues(alpha: 0.12),
             ),
           ),
           AnimatedContainer(
@@ -800,15 +800,15 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
             width: sizeWidth,
             height: sizeHeight,
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A).withOpacity(0.9),
+              color: const Color(0xFF0F172A).withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: _selectedIndex >= 0 ? primaryColor.withOpacity(0.6) : Colors.white.withOpacity(0.15),
+                color: _selectedIndex >= 0 ? primaryColor.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.15),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: _selectedIndex >= 0 ? primaryColor.withOpacity(0.3) : Colors.black.withOpacity(0.4),
+                  color: _selectedIndex >= 0 ? primaryColor.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.4),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -824,7 +824,7 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: primaryColor.withOpacity(0.3),
+                      color: primaryColor.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -863,7 +863,7 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.04),
+                      color: Colors.white.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.white10),
                     ),
@@ -887,8 +887,8 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
                             duration: const Duration(milliseconds: 200),
                             decoration: BoxDecoration(
                               color: isItemSelect
-                                  ? primaryColor.withOpacity(0.2)
-                                  : Colors.white.withOpacity(0.05),
+                                  ? primaryColor.withValues(alpha: 0.2)
+                                  : Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                   color: isItemSelect ? primaryColor : Colors.transparent,
@@ -941,8 +941,8 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: _isDispensing
-                                  ? Colors.orangeAccent.withOpacity(0.15)
-                                  : primaryColor.withOpacity(0.15),
+                                  ? Colors.orangeAccent.withValues(alpha: 0.15)
+                                  : primaryColor.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: _isDispensing ? Colors.orangeAccent : primaryColor,
@@ -995,7 +995,7 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
                       : Container(
                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Row(
@@ -1003,15 +1003,16 @@ class _InteractiveVendingMockupState extends State<InteractiveVendingMockup> {
                             children: [
                               Icon(Icons.touch_app_rounded, color: Colors.white60, size: 14),
                               SizedBox(width: 6),
-                              Text(
+                              Flexible(child: Text(
                                 'TAP AN ITEM TO VEND',
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 8,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 0.5,
                                 ),
-                              ),
+                              )),
                             ],
                           ),
                         ),

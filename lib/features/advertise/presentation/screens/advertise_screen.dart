@@ -158,12 +158,12 @@ class AdvertiseScreen extends StatelessWidget {
     return Container(
       decoration: AppTheme.cardDecoration(context).copyWith(
         border: Border.all(
-          color: primaryColor.withOpacity(0.18),
+          color: primaryColor.withValues(alpha: 0.18),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.05),
+            color: primaryColor.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -177,7 +177,7 @@ class AdvertiseScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: primaryColor, size: 28),
@@ -263,12 +263,12 @@ class AdvertiseScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             decoration: AppTheme.cardDecoration(context).copyWith(
               border: Border.all(
-                color: primaryColor.withOpacity(0.15),
+                color: primaryColor.withValues(alpha: 0.15),
                 width: 1.2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.04),
+                  color: primaryColor.withValues(alpha: 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),

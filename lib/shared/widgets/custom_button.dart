@@ -99,7 +99,7 @@ class _CustomButtonState extends State<CustomButton> {
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: secondaryBorderColor, width: 2),
                   backgroundColor: _isHovered
-                      ? AppTheme.primary(context).withOpacity(0.05)
+                      ? AppTheme.primary(context).withValues(alpha: 0.05)
                       : Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
